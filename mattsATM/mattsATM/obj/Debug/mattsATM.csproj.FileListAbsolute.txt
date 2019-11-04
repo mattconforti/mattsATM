@@ -1,0 +1,5 @@
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/mattsATM.exe
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/mattsATM.pdb
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.csprojAssemblyReference.cache
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.exe
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.pdb
