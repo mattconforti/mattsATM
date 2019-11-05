@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace mattsATM
@@ -23,6 +24,25 @@ namespace mattsATM
             this.usrInfoDict = new Dictionary<int, string>();
         }
 
+        public int presentMenu()
+        {
+            Console.WriteLine(" --------------------------");
+            Console.WriteLine("|                          |");
+            Console.WriteLine("|  Welcome to Matt's ATM!  |");
+            Console.WriteLine("|                          |");
+            Console.WriteLine(" --------------------------\n");
+
+            Console.WriteLine("Please choose from the following options:\n");
+            Console.WriteLine("1. Log In");
+            Console.WriteLine("2. Register");
+            Console.WriteLine("3. Exit");
+
+            Console.WriteLine("\nEnter your choice below. ");
+            Console.Write("> ");
+            int usrChoice = Convert.ToInt32(Console.ReadLine());
+            return usrChoice;
+        }
+
         public void printInfo()
         {
             Console.WriteLine("ATM INFO -------");
@@ -30,21 +50,57 @@ namespace mattsATM
             Console.WriteLine($"Location: {this.location}");
         }
 
-        public void userLogIn(User newUser)
+        /// <summary>
+        /// creates an 11 digit random identifier
+        /// </summary>
+        /// <returns></returns>
+        public string idGen()
         {
-            string userID = newUser.getID();
+            // get random file name from Systen.Path
+            // this method uses RNGCryptoServiceProvider to get cryptographic strength"
+            string randomPathName = Path.GetRandomFileName();
+            randomPathName = randomPathName.Replace(".", "");
+            return randomPathName;
+        }
+
+
+        public void newUserSignUp()
+        {
+            Console.WriteLine("\nPlease enter your full name.");
+            Console.Write("> ");
+            string userFullName = Console.ReadLine();
+
+            string userID = idGen();
+            Console.WriteLine($"\nYour auto-generated UseID is {userID}\n");
+
+
+            Console.WriteLine("Please enter a new 4 digit pin below.");
+            Console.WriteLine("Remember this pin for future use.");
+            Console.Write("> ");
+            string userPin = Console.ReadLine();
+
+
+        }
+
+        public void userLogIn(User registeredUser)
+        {
+            string userID = registeredUser.getID();
         }
 
     }
 
     class User
     {
+
+        private string name;
+
         private string ID;
 
         private int pin;
 
-        public User(string inID, int inPin)
+        public User(string inName, string inID, int inPin)
         {
+            this.name = inName;
             this.ID = inID;
             this.pin = inPin;
         }
@@ -65,13 +121,18 @@ namespace mattsATM
         public static void Main(string[] args)
         {
             Atm newAtm = new Atm("CitiBank", "New York");
-            User mattC = new User("21", 1234);
-            newAtm.userLogIn(mattC);
-
             if (newAtm.debug)
             {
                 newAtm.printInfo();
             }
+
+            int userSelection = newAtm.presentMenu();
+
+            if (userSelection == 2)
+            {
+                newAtm.newUserSignUp();
+            }
         }
+
     }
 }
