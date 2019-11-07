@@ -3,3 +3,13 @@
 /Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.csprojAssemblyReference.cache
 /Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.exe
 /Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.pdb
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/mattsATM.exe.config
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/BouncyCastle.Crypto.dll
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/Google.Protobuf.dll
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/MySql.Data.dll
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/Renci.SshNet.dll
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/Google.Protobuf.xml
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/Renci.SshNet.xml
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/bin/Debug/MySql.Data.xml
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.exe.config
+/Users/mattconforti/Desktop/CSC/C#/mattsATM/mattsATM/mattsATM/obj/Debug/mattsATM.csproj.CopyComplete

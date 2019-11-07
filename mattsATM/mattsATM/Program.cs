@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 
 namespace mattsATM
 {
@@ -8,11 +9,15 @@ namespace mattsATM
     class Atm
     {
 
-        public bool debug = true;
+        public bool debug = false;
 
         private string bankName;
 
         private string location;
+
+        private string connectionString;
+
+        private MySqlConnection bankDbConnection;
 
         // Generic Dictionary Collection
         private Dictionary<int, string> usrInfoDict;
@@ -22,6 +27,8 @@ namespace mattsATM
             this.bankName = inBankName;
             this.location = inLocation;
             this.usrInfoDict = new Dictionary<int, string>();
+            this.connectionString = "";
+            this.bankDbConnection = null;
         }
 
         public int presentMenu()
@@ -33,7 +40,7 @@ namespace mattsATM
             Console.WriteLine(" --------------------------\n");
 
             Console.WriteLine("Please choose from the following options:\n");
-            Console.WriteLine("1. Log In");
+            Console.WriteLine("1. Log-in");
             Console.WriteLine("2. Register");
             Console.WriteLine("3. Exit");
 
@@ -57,7 +64,7 @@ namespace mattsATM
         public string idGen()
         {
             // get random file name from Systen.Path
-            // this method uses RNGCryptoServiceProvider to get cryptographic strength"
+            // this method uses RNGCryptoServiceProvider to get cryptographic strength
             string randomPathName = Path.GetRandomFileName();
             randomPathName = randomPathName.Replace(".", "");
             return randomPathName;
@@ -71,15 +78,15 @@ namespace mattsATM
             string userFullName = Console.ReadLine();
 
             string userID = idGen();
-            Console.WriteLine($"\nYour auto-generated UseID is {userID}\n");
+            Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
 
 
             Console.WriteLine("Please enter a new 4 digit pin below.");
             Console.WriteLine("Remember this pin for future use.");
             Console.Write("> ");
-            string userPin = Console.ReadLine();
+            int userPin = Convert.ToInt32(Console.ReadLine());
 
-
+            User newUser = new User(userFullName, userID, userPin);
         }
 
         public void userLogIn(User registeredUser)
@@ -128,11 +135,24 @@ namespace mattsATM
 
             int userSelection = newAtm.presentMenu();
 
-            if (userSelection == 2)
+            switch (userSelection)
             {
-                newAtm.newUserSignUp();
+                case 1:
+                    Console.WriteLine("Not implemented yet.");
+                    break;
+
+                case 2:
+                    newAtm.newUserSignUp();
+                    break;
+
+                case 3:
+                    System.Environment.Exit(0);
+                    break;
+
+                default:
+                    Console.WriteLine("Selection unknown.");
+                    break;
             }
         }
-
     }
 }
