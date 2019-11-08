@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace mattsATM
@@ -19,16 +18,33 @@ namespace mattsATM
 
         private MySqlConnection bankDbConnection;
 
-        // Generic Dictionary Collection
-        private Dictionary<int, string> usrInfoDict;
-
         public Atm(string inBankName, string inLocation)
         {
             this.bankName = inBankName;
             this.location = inLocation;
-            this.usrInfoDict = new Dictionary<int, string>();
             this.connectionString = "";
             this.bankDbConnection = null;
+        }
+
+        private void dbConnect()
+        {
+            string infoString = getConnectionString();
+            MySqlConnection dbConnection = new MySqlConnection(infoString);
+
+            try
+            {
+                dbConnection.Open();
+                if (debug)
+                {
+                    Console.WriteLine("\nConnection Open -----------------");
+                }
+                dbConnection.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: {e}");
+            }
+
         }
 
         public int presentMenu()
@@ -94,6 +110,16 @@ namespace mattsATM
             string userID = registeredUser.getID();
         }
 
+        public string getConnectionString()
+        {
+            return this.connectionString;
+        }
+
+        public void setConnectionString(string value)
+        {
+            this.connectionString = value;
+        }
+
     }
 
     class User
@@ -112,14 +138,14 @@ namespace mattsATM
             this.pin = inPin;
         }
 
-        public void setID(string value)
-        {
-            this.ID = value;
-        }
-
         public string getID()
         {
             return this.ID;
+        }
+
+        public void setID(string value)
+        {
+            this.ID = value;
         }
     }
 
