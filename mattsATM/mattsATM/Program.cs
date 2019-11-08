@@ -8,7 +8,7 @@ namespace mattsATM
     class Atm
     {
 
-        public bool debug = false;
+        public bool debug = true;
 
         private string bankName;
 
@@ -22,11 +22,11 @@ namespace mattsATM
         {
             this.bankName = inBankName;
             this.location = inLocation;
-            this.connectionString = "";
+            this.connectionString = "Database=mattsAtmDb; Uid=atmQuery; Pwd=atmPwd;";
             this.bankDbConnection = null;
         }
 
-        private void dbConnect()
+        public void dbConnect()
         {
             string infoString = getConnectionString();
             MySqlConnection dbConnection = new MySqlConnection(infoString);
@@ -36,9 +36,13 @@ namespace mattsATM
                 dbConnection.Open();
                 if (debug)
                 {
-                    Console.WriteLine("\nConnection Open -----------------");
+                    Console.WriteLine("\nConnection Open -------------------");
                 }
                 dbConnection.Close();
+                if (debug)
+                {
+                    Console.WriteLine("\nConnection Closed -----------------");
+                }
             }
             catch (Exception e)
             {
@@ -159,6 +163,7 @@ namespace mattsATM
                 newAtm.printInfo();
             }
 
+            newAtm.dbConnect();
             int userSelection = newAtm.presentMenu();
 
             switch (userSelection)
