@@ -28,7 +28,7 @@ namespace mattsATM
 
         public void dbConnect()
         {
-            string infoString = getConnectionString();
+            string infoString = ConnectionString;
             MySqlConnection dbConnection = new MySqlConnection(infoString);
 
             try
@@ -91,7 +91,7 @@ namespace mattsATM
         }
 
 
-        public void newUserSignUp()
+        public User newUserSignUp()
         {
             Console.WriteLine("\nPlease enter your full name.");
             Console.Write("> ");
@@ -107,21 +107,26 @@ namespace mattsATM
             int userPin = Convert.ToInt32(Console.ReadLine());
 
             User newUser = new User(userFullName, userID, userPin);
+            return newUser;
         }
 
         public void userLogIn(User registeredUser)
         {
-            string userID = registeredUser.getID();
+            string userID = registeredUser.ID;
         }
 
-        public string getConnectionString()
+        // ConnectionString property
+        public string ConnectionString
         {
-            return this.connectionString;
-        }
+            get
+            {
+                return connectionString;
+            }
 
-        public void setConnectionString(string value)
-        {
-            this.connectionString = value;
+            set
+            {
+                connectionString = value;
+            }
         }
 
     }
@@ -131,25 +136,57 @@ namespace mattsATM
 
         private string name;
 
-        private string ID;
+        private string id;
 
         private int pin;
 
         public User(string inName, string inID, int inPin)
         {
             this.name = inName;
-            this.ID = inID;
+            this.id = inID;
             this.pin = inPin;
         }
 
-        public string getID()
+        // Name property of type string
+        public string Name
         {
-            return this.ID;
+            get
+            {
+                return name;
+            }
+
+            set
+            {
+                name = value;
+            }
         }
 
-        public void setID(string value)
+        // ID property
+        public string ID
         {
-            this.ID = value;
+            get
+            {
+                return id;
+            }
+
+            set
+            {
+                id = value;
+            }
+          
+         }
+
+        // Pin property of type int
+        public int Pin
+        {
+            get
+            {
+                return pin;
+            }
+            set
+            {
+                pin = value;
+            }
         }
     }
 
@@ -173,7 +210,7 @@ namespace mattsATM
                     break;
 
                 case 2:
-                    newAtm.newUserSignUp();
+                    User newUser = newAtm.newUserSignUp();
                     break;
 
                 case 3:
