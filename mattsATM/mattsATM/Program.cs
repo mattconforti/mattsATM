@@ -34,12 +34,12 @@ namespace mattsATM
             try
             {
                 dbConnection.Open();
+                // set the bankDbConnection instance var
+                bankDbConnection = dbConnection;
                 if (debug)
                 {
                     Console.WriteLine("\nDb Connection Open -------------------");
                 }
-                // set the bankDbConnection instance var
-                this.bankDbConnection = dbConnection;
             }
             catch (Exception e)
             {
@@ -49,11 +49,12 @@ namespace mattsATM
 
         public void dbCloseConnection()
         {
-            MySqlConnection toBeClosed = this.bankDbConnection;
+            MySqlConnection toBeClosed = bankDbConnection;
+
             try
             {
                 toBeClosed.Close();  // close the connection and set the var to null
-                this.bankDbConnection = null;
+                bankDbConnection = null;
                 if (debug)
                 {
                     Console.WriteLine("\nDb Connection Closed -------------------");
@@ -87,8 +88,8 @@ namespace mattsATM
         public void printInfo()
         {
             Console.WriteLine("ATM INFO -------");
-            Console.WriteLine($"Bank: {this.bankName}");
-            Console.WriteLine($"Location: {this.location}");
+            Console.WriteLine($"Bank: {bankName}");
+            Console.WriteLine($"Location: {location}");
         }
 
         /// <summary>
