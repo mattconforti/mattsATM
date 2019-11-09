@@ -26,7 +26,7 @@ namespace mattsATM
             this.bankDbConnection = null;
         }
 
-        public void dbConnect()
+        public void dbOpenConnection()
         {
             string infoString = ConnectionString;
             MySqlConnection dbConnection = new MySqlConnection(infoString);
@@ -36,19 +36,33 @@ namespace mattsATM
                 dbConnection.Open();
                 if (debug)
                 {
-                    Console.WriteLine("\nConnection Open -------------------");
+                    Console.WriteLine("\nDb Connection Open -------------------");
                 }
-                dbConnection.Close();
+                // set the bankDbConnection instance var
+                this.bankDbConnection = dbConnection;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception: {e}");
+            }
+        }
+
+        public void dbCloseConnection()
+        {
+            MySqlConnection toBeClosed = this.bankDbConnection;
+            try
+            {
+                toBeClosed.Close();  // close the connection and set the var to null
+                this.bankDbConnection = null;
                 if (debug)
                 {
-                    Console.WriteLine("\nConnection Closed -----------------");
+                    Console.WriteLine("\nDb Connection Closed -------------------");
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Exception: {e}");
             }
-
         }
 
         public int presentMenu()
@@ -200,7 +214,7 @@ namespace mattsATM
                 newAtm.printInfo();
             }
 
-            newAtm.dbConnect();
+            newAtm.dbOpenConnection();
             int userSelection = newAtm.presentMenu();
 
             switch (userSelection)
@@ -214,6 +228,7 @@ namespace mattsATM
                     break;
 
                 case 3:
+                    newAtm.dbCloseConnection();
                     System.Environment.Exit(0);
                     break;
 
@@ -221,6 +236,7 @@ namespace mattsATM
                     Console.WriteLine("Selection unknown.");
                     break;
             }
+            newAtm.dbCloseConnection();  // close the db connection after break
         }
     }
 }
