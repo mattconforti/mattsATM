@@ -43,7 +43,7 @@ namespace mattsATM
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Exception: {e}");
+                Console.WriteLine($"Exception: {e.ToString()}");
             }
         }
 
@@ -62,7 +62,7 @@ namespace mattsATM
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Exception: {e}");
+                Console.WriteLine($"Exception: {e.ToString()}");
             }
         }
 
@@ -81,7 +81,12 @@ namespace mattsATM
 
             Console.WriteLine("\nEnter your choice below. ");
             Console.Write("> ");
-            int usrChoice = Convert.ToInt32(Console.ReadLine());
+            int usrChoice;
+            if (! (Int32.TryParse(Console.ReadLine(), out usrChoice)))
+            {
+                Console.WriteLine("\nEnter only a number 1-3.");
+                Environment.Exit(0);
+            }
             return usrChoice;
         }
 
@@ -105,7 +110,6 @@ namespace mattsATM
             return randomPathName;
         }
 
-
         public User newUserSignUp()
         {
             Console.WriteLine("\nPlease enter your full name.");
@@ -119,10 +123,48 @@ namespace mattsATM
             Console.WriteLine("Please enter a new 4 digit pin below.");
             Console.WriteLine("Remember this pin for future use.");
             Console.Write("> ");
-            int userPin = Convert.ToInt32(Console.ReadLine());
+            string userInput = Console.ReadLine();
+            int userPin;
+            if (userInput.Length < 4)
+            {
+                Console.WriteLine("\nPin not accepted.\nApplication quitting for security reasons.");
+                Environment.Exit(0);
+            }
+
+            if (!(Int32.TryParse(userInput, out userPin))) // if can't be converted to int
+            {
+                Console.WriteLine("\nPin not accepted.\nApplication quitting for security reasons.");
+                Environment.Exit(0);
+            }
 
             User newUser = new User(userFullName, userID, userPin);
-            return newUser;
+            return newUser;  // return the new User with validated info
+        }
+
+        public void registerNewUser(User newUser)
+        {
+            string sqlString = $"INSERT INTO USERINFO VALUES (\"{newUser.Name}\", \"{newUser.ID}\"" +
+                $", {newUser.Pin});";
+
+            if (debug)
+            {
+                Console.WriteLine($"SQL COMMAND: {sqlString}");
+            }
+
+            try  // will succeed if bankDbConnection is properly set
+            {
+                MySqlCommand dbCommand = new MySqlCommand(sqlString, bankDbConnection);
+                dbCommand.ExecuteNonQuery();  // use for insert, update, and delete commands
+                if (debug)
+                {
+                    Console.WriteLine("\nCommand Executed.\n");
+                }
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Exception:\n{e.ToString()}");
+            }
         }
 
         public void userLogIn(User registeredUser)
@@ -199,7 +241,7 @@ namespace mattsATM
                 return pin;
             }
             set
-            {
+            {   
                 pin = value;
             }
         }
@@ -226,15 +268,16 @@ namespace mattsATM
 
                 case 2:
                     User newUser = newAtm.newUserSignUp();
+                    newAtm.registerNewUser(newUser);
                     break;
 
                 case 3:
                     newAtm.dbCloseConnection();
-                    System.Environment.Exit(0);
+                    Environment.Exit(0);
                     break;
 
                 default:
-                    Console.WriteLine("Selection unknown.");
+                    Console.WriteLine("\nSelection unknown.");
                     break;
             }
             newAtm.dbCloseConnection();  // close the db connection after break
