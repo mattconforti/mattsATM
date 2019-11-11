@@ -112,10 +112,37 @@ namespace mattsATM
 
         public User newUserSignUp()
         {
-            Console.WriteLine("\nPlease enter your full name.");
+            Console.WriteLine("\nPlease enter your First, Middle (if applicable), and Last name below.");
             Console.Write("> ");
-            string userFullName = Console.ReadLine();
+            string usrInfoIn = Console.ReadLine();
+            string userFullName;
+            string[] nameArr = usrInfoIn.Split(' ');
+            int arrayLen = nameArr.Length;
 
+            if (arrayLen < 2 || arrayLen > 3)  // has to be first, middle (if applicable), last
+            {
+                Console.WriteLine("\nName not accepted.\nApplication quitting for security reasons.");
+                Environment.Exit(0);
+            }
+
+            foreach (var name in nameArr)
+            {
+                foreach (var character in name)
+                {
+                    if (debug)
+                    {
+                        Console.WriteLine(character);
+                    }
+
+                    if (!(Char.IsLetter(character))) // if any of the characters is not a letter
+                    {
+                        Console.WriteLine("\nName not accepted.\nApplication quitting for security reasons.");
+                        Environment.Exit(0);
+                    }
+                }
+            }
+            userFullName = usrInfoIn;  // name is valid
+            
             string userID = idGen();
             Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
 
