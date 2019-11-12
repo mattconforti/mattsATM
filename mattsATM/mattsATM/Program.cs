@@ -148,7 +148,7 @@ namespace mattsATM
 
 
             Console.WriteLine("Please enter a new 4 digit pin below.");
-            Console.WriteLine("Remember this pin for future use.");
+            Console.WriteLine("\n** REMEMBER YOUR ID AND PIN FOR FUTURE USE **\n");
             Console.Write("> ");
             string userInput = Console.ReadLine();
             int userPin;
@@ -194,9 +194,45 @@ namespace mattsATM
             }
         }
 
-        public void userLogIn(User registeredUser)
+        public void userLogIn()
         {
-            string userID = registeredUser.ID;
+            Console.WriteLine("\nEnter your ID and Pin below to log-in");
+            Console.Write("ID > ");
+            string idIn = Console.ReadLine();
+            //TODO validate this input (11 characters, 1 word, etc.)
+            Console.Write("Pin > ");
+            string pinIn = Console.ReadLine();
+            //TODO validate this input and convert to int etc
+
+            // check if the user's input matches whats in the db
+            string idQueryString = "SELECT ID FROM USERINFO;";
+
+            try
+            {
+                MySqlCommand command = new MySqlCommand(idQueryString, bankDbConnection);
+                MySqlDataReader dataReader = command.ExecuteReader();
+
+                if (debug)
+                {
+                    Console.WriteLine("\nData Found: ");
+                }
+                while (dataReader.Read())
+                {
+                    if (debug)
+                    {
+                        Console.WriteLine(dataReader[0]);
+                    }
+                    //TODO add each ID to an array, and see if the ID entered matches any
+                    //TODO if the ID matches, get the pin for that ID from db and see if it matches
+                    // the pin that was entered
+                    // if so, this users info was correct and he/she is logged in - open new menu
+                }
+                dataReader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception:\n{e.ToString()}");
+            }
         }
 
         // ConnectionString property
@@ -290,7 +326,7 @@ namespace mattsATM
             switch (userSelection)
             {
                 case 1:
-                    Console.WriteLine("Not implemented yet.");
+                    newAtm.userLogIn();
                     break;
 
                 case 2:
