@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 namespace mattsATM
@@ -206,23 +207,16 @@ namespace mattsATM
 
             // check if the user's input matches whats in the db
             string idQueryString = "SELECT ID FROM USERINFO;";
+            List<string> dbQueryResults = new List<string>();  // do not know a specified length
 
             try
             {
                 MySqlCommand command = new MySqlCommand(idQueryString, bankDbConnection);
                 MySqlDataReader dataReader = command.ExecuteReader();
 
-                if (debug)
-                {
-                    Console.WriteLine("\nData Found: ");
-                }
                 while (dataReader.Read())
-                {
-                    if (debug)
-                    {
-                        Console.WriteLine(dataReader[0]);
-                    }
-                    //TODO add each ID to an array, and see if the ID entered matches any
+                { 
+                    dbQueryResults.Add(dataReader[0].ToString());
                     //TODO if the ID matches, get the pin for that ID from db and see if it matches
                     // the pin that was entered
                     // if so, this users info was correct and he/she is logged in - open new menu
@@ -232,6 +226,29 @@ namespace mattsATM
             catch (Exception e)
             {
                 Console.WriteLine($"Exception:\n{e.ToString()}");
+            }
+
+            if (debug)
+            {
+                foreach (var item in dbQueryResults)
+                {
+                    Console.WriteLine($"Item Found: {item}");
+                }
+            }
+
+            if (dbQueryResults.Contains(idIn))  // if the database contains the ID entered
+            {
+                if (debug)
+                {
+                    Console.WriteLine("\nID match!");
+                }
+            }
+            else
+            {
+                if (debug)
+                {
+                    Console.WriteLine("\nNo match.");
+                }
             }
         }
 
