@@ -85,7 +85,25 @@ namespace mattsATM
             int usrChoice;
             if (! (Int32.TryParse(Console.ReadLine(), out usrChoice)))
             {
-                Console.WriteLine("\nEnter only a number 1-3.");
+                Console.WriteLine("\nEnter only a number (1-3).");
+                Environment.Exit(0);
+            }
+            return usrChoice;
+        }
+
+        public int presentLoggedInMenu()
+        {
+            Console.WriteLine("\nPlease select an option from the menu below:\n");
+            Console.WriteLine("1. Withdraw");
+            Console.WriteLine("2. Deposit");
+            Console.WriteLine("3. Display Balance");
+            Console.WriteLine("4. Display Transaction History");
+            Console.WriteLine("5. Exit\n");
+            Console.Write("> ");
+            int usrChoice;
+            if (!(Int32.TryParse(Console.ReadLine(), out usrChoice)))
+            {
+                Console.WriteLine("\nEnter only a number (1-5).");
                 Environment.Exit(0);
             }
             return usrChoice;
@@ -195,19 +213,21 @@ namespace mattsATM
             }
         }
 
-        public void userLogIn()
+        public bool userLogIn()
         {
+            bool isLoggedIn = false;
             Console.WriteLine("\nEnter your ID and Pin below to log-in");
             Console.Write("ID > ");
             string idIn = Console.ReadLine();
             //TODO validate this input (11 characters, 1 word, etc.)
             Console.Write("Pin > ");
             string pinIn = Console.ReadLine();
-            //TODO validate this input and convert to int etc
+            int iPinIn = Convert.ToInt32(pinIn);
+            //TODO validate this input
 
             // check if the user's input matches whats in the db
             string idQueryString = "SELECT ID FROM USERINFO;";
-            List<string> dbQueryResults = new List<string>();  // do not know a specified length
+            List<string> dbQueryResults = new List<string>();  // no specific length
 
             try
             {
@@ -215,24 +235,22 @@ namespace mattsATM
                 MySqlDataReader dataReader = command.ExecuteReader();
 
                 while (dataReader.Read())
-                { 
+                {
                     dbQueryResults.Add(dataReader[0].ToString());
-                    //TODO if the ID matches, get the pin for that ID from db and see if it matches
-                    // the pin that was entered
-                    // if so, this users info was correct and he/she is logged in - open new menu
                 }
                 dataReader.Close();
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Exception:\n{e.ToString()}");
+                return isLoggedIn;
             }
 
             if (debug)
             {
                 foreach (var item in dbQueryResults)
                 {
-                    Console.WriteLine($"Item Found: {item}");
+                    Console.WriteLine($"\nItem Found: {item}");
                 }
             }
 
@@ -242,6 +260,44 @@ namespace mattsATM
                 {
                     Console.WriteLine("\nID match!");
                 }
+
+                string checkPinQuery = $"SELECT PIN FROM USERINFO WHERE ID=\"{idIn}\"";
+
+                try
+                {
+                    MySqlCommand command = new MySqlCommand(checkPinQuery, bankDbConnection);
+                    object queryResult = command.ExecuteScalar();
+
+        
+                    int dbPin = Convert.ToInt32(queryResult);
+                    if (debug)
+                    {
+                        Console.WriteLine($"\nPin found: {dbPin}");
+                    }
+
+                    if (dbPin == iPinIn)  // if the pin entered matches the one found on our system
+                    {
+                        if (debug)
+                        {
+                            Console.WriteLine("\nPin Match!");
+                        }
+                        Console.WriteLine("\nSuccessful Log-In. Welcome!");
+                        isLoggedIn = true;
+                        return isLoggedIn;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\n** Incorrect Pin **\n");
+                        Console.WriteLine("Application quitting for security reasons.");
+                        return isLoggedIn;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error:\n{e.ToString()}");
+                    return isLoggedIn;
+                }
+
             }
             else
             {
@@ -249,6 +305,10 @@ namespace mattsATM
                 {
                     Console.WriteLine("\nNo match.");
                 }
+                Console.WriteLine("\n**ID not found in our system.**\n");
+                Console.WriteLine("If you are a registered user, please try again.");
+                Console.WriteLine("\nOtherwise, please select choice 2 (Register) when given the option.");
+                return isLoggedIn;
             }
         }
 
@@ -343,7 +403,15 @@ namespace mattsATM
             switch (userSelection)
             {
                 case 1:
-                    newAtm.userLogIn();
+                    bool userLoggedIn = newAtm.userLogIn();
+                    if (userLoggedIn)
+                    {
+                        int usrchoice = newAtm.presentLoggedInMenu();
+                    }
+                    else
+                    {
+                        Environment.Exit(0);
+                    }
                     break;
 
                 case 2:
