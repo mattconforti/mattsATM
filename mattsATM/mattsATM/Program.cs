@@ -27,7 +27,7 @@ namespace mattsATM
             this.bankDbConnection = null;
         }
 
-        public void dbOpenConnection()
+        public void DbOpenConnection()
         {
             string infoString = ConnectionString;
             MySqlConnection dbConnection = new MySqlConnection(infoString);
@@ -48,7 +48,7 @@ namespace mattsATM
             }
         }
 
-        public void dbCloseConnection()
+        public void DbCloseConnection()
         {
             MySqlConnection toBeClosed = bankDbConnection;
 
@@ -67,7 +67,7 @@ namespace mattsATM
             }
         }
 
-        public int presentMenu()
+        public int PresentMenu()
         {
             Console.WriteLine(" --------------------------");
             Console.WriteLine("|                          |");
@@ -91,7 +91,7 @@ namespace mattsATM
             return usrChoice;
         }
 
-        public int presentLoggedInMenu()
+        public int PresentLoggedInMenu()
         {
             Console.WriteLine("\nPlease select an option from the menu below:\n");
             Console.WriteLine("1. Withdraw");
@@ -109,7 +109,7 @@ namespace mattsATM
             return usrChoice;
         }
 
-        public void printInfo()
+        public void PrintInfo()
         {
             Console.WriteLine("ATM INFO -------");
             Console.WriteLine($"Bank: {bankName}");
@@ -120,7 +120,7 @@ namespace mattsATM
         /// creates an 11 digit random identifier
         /// </summary>
         /// <returns></returns>
-        public string idGen()
+        public string IdGen()
         {
             // get random file name from Systen.Path
             // this method uses RNGCryptoServiceProvider to get cryptographic strength
@@ -129,7 +129,7 @@ namespace mattsATM
             return randomPathName;
         }
 
-        public User newUserSignUp()
+        public User NewUserSignUp()
         {
             Console.WriteLine("\nPlease enter your First, Middle (if applicable), and Last name below.");
             Console.Write("> ");
@@ -162,7 +162,7 @@ namespace mattsATM
             }
             userFullName = usrInfoIn;  // name is valid
             
-            string userID = idGen();
+            string userID = IdGen();
             Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
 
 
@@ -187,7 +187,7 @@ namespace mattsATM
             return newUser;  // return the new User with validated info
         }
 
-        public void registerNewUser(User newUser)
+        public void RegisterNewUser(User newUser)
         {
             string sqlString = $"INSERT INTO USERINFO VALUES (\"{newUser.Name}\", \"{newUser.ID}\"" +
                 $", {newUser.Pin});";
@@ -213,7 +213,7 @@ namespace mattsATM
             }
         }
 
-        public bool userLogIn()
+        public bool UserLogIn()
         {
             bool isLoggedIn = false;
             Console.WriteLine("\nEnter your ID and Pin below to log-in");
@@ -268,7 +268,6 @@ namespace mattsATM
                     MySqlCommand command = new MySqlCommand(checkPinQuery, bankDbConnection);
                     object queryResult = command.ExecuteScalar();
 
-        
                     int dbPin = Convert.ToInt32(queryResult);
                     if (debug)
                     {
@@ -310,6 +309,13 @@ namespace mattsATM
                 Console.WriteLine("\nOtherwise, please select choice 2 (Register) when given the option.");
                 return isLoggedIn;
             }
+        }
+
+        public string ValidateUserInput(string input)
+        {
+            string validatedInput = "";
+
+            return validatedInput;
         }
 
         // ConnectionString property
@@ -394,19 +400,41 @@ namespace mattsATM
             Atm newAtm = new Atm("CitiBank", "New York");
             if (newAtm.debug)
             {
-                newAtm.printInfo();
+                newAtm.PrintInfo();
             }
 
-            newAtm.dbOpenConnection();
-            int userSelection = newAtm.presentMenu();
+            newAtm.DbOpenConnection();
+            int userSelection = newAtm.PresentMenu();
 
             switch (userSelection)
             {
                 case 1:
-                    bool userLoggedIn = newAtm.userLogIn();
+                    bool userLoggedIn = newAtm.UserLogIn();
                     if (userLoggedIn)
                     {
-                        int usrchoice = newAtm.presentLoggedInMenu();
+                        int usrChoice = newAtm.PresentLoggedInMenu();
+
+                        switch (usrChoice)
+                        {
+                            case 1:
+                                break;
+
+                            case 2:
+                                break;
+
+                            case 3:
+                                break;
+
+                            case 4:
+                                break;
+
+                            case 5:
+                                break;
+
+                            default:
+                                Console.WriteLine("\nSelection unknown.");
+                                break;
+                        }
                     }
                     else
                     {
@@ -415,12 +443,12 @@ namespace mattsATM
                     break;
 
                 case 2:
-                    User newUser = newAtm.newUserSignUp();
-                    newAtm.registerNewUser(newUser);
+                    User newUser = newAtm.NewUserSignUp();
+                    newAtm.RegisterNewUser(newUser);
                     break;
 
                 case 3:
-                    newAtm.dbCloseConnection();
+                    newAtm.DbCloseConnection();
                     Environment.Exit(0);
                     break;
 
@@ -428,7 +456,7 @@ namespace mattsATM
                     Console.WriteLine("\nSelection unknown.");
                     break;
             }
-            newAtm.dbCloseConnection();  // close the db connection after break
+            newAtm.DbCloseConnection();  // close the db connection after break
         }
     }
 }
