@@ -5,7 +5,13 @@ using MySql.Data.MySqlClient;
 
 namespace mattsATM
 {
-
+    /// <summary>
+    /// The Atm class: a simulation of an automated teller machine
+    /// </summary>
+    /// <remarks>
+    /// Uses a MySQL database to store log-in info, atm transactions, balances etc.
+    /// and gives users with valid credentials access to normal banking functions
+    /// </remarks>
     class Atm
     {
 
@@ -119,7 +125,9 @@ namespace mattsATM
         /// <summary>
         /// creates an 11 digit random identifier
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// randomPathName: an 11 digit randomized string of letters and numbers
+        /// </returns>
         public string IdGen()
         {
             // get random file name from Systen.Path
@@ -189,7 +197,7 @@ namespace mattsATM
 
         public void RegisterNewUser(User newUser)
         {
-            string sqlString = $"INSERT INTO USERINFO VALUES (\"{newUser.Name}\", \"{newUser.ID}\"" +
+            string sqlString = $"INSERT INTO USERS VALUES (\"{newUser.Name}\", \"{newUser.ID}\"" +
                 $", {newUser.Pin});";
 
             if (debug)
@@ -226,7 +234,7 @@ namespace mattsATM
             //TODO validate this input
 
             // check if the user's input matches whats in the db
-            string idQueryString = "SELECT ID FROM USERINFO;";
+            string idQueryString = "SELECT ID FROM USERS;";
             List<string> dbQueryResults = new List<string>();  // no specific length
 
             try
@@ -261,7 +269,7 @@ namespace mattsATM
                     Console.WriteLine("\nID match!");
                 }
 
-                string checkPinQuery = $"SELECT PIN FROM USERINFO WHERE ID=\"{idIn}\"";
+                string checkPinQuery = $"SELECT PIN FROM USERS WHERE ID=\"{idIn}\"";
 
                 try
                 {
@@ -334,6 +342,13 @@ namespace mattsATM
 
     }
 
+    /// <summary>
+    /// The User class: represents and stores info for a person using this ATM program
+    /// </summary>
+    /// <remarks>
+    /// Users have a name, ID, and pin. All are necessary to have if wishing to use this ATM.
+    /// If a person does not have an ID or pin, he or she must register with the system.
+    /// </remarks>
     class User
     {
 
@@ -393,6 +408,10 @@ namespace mattsATM
         }
     }
 
+    /// <summary>
+    /// The main class: contains the main method where our ATM instance is created
+    /// and menus are displayed for the user to navigate our services
+    /// </summary>
     class MainClass
     {
         public static void Main(string[] args)
