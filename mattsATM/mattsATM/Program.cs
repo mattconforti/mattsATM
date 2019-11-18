@@ -6,25 +6,44 @@ using MySql.Data.MySqlClient;
 namespace mattsATM
 {
     /// <summary>
-    /// The Atm class: a simulation of an automated teller machine
+    /// The Atm class: a simulation of an automated teller machine.
     /// </summary>
     /// <remarks>
     /// Uses a MySQL database to store log-in info, atm transactions, balances etc.
-    /// and gives users with valid credentials access to normal banking functions
+    /// and gives users with valid credentials access to normal banking functions.
     /// </remarks>
     class Atm
     {
-
+        /// <summary>
+        /// A boolean value to determine whether to print debug statements or not.
+        /// </summary>
         public bool debug = true;
 
+        /// <summary>
+        /// The name of the bank. Ex. Chase.
+        /// </summary>
         private string bankName;
 
+        /// <summary>
+        /// The location of the bank. Ex. 123 Main Street, Buffalo, NY, 14215.
+        /// </summary>
         private string location;
 
+        /// <summary>
+        /// A string used to supply the MySqlConnection object with values.
+        /// </summary>
         private string connectionString;
 
+        /// <summary>
+        /// A MySqlConnection object. Used later to connect to a MySQL database.
+        /// </summary>
         private MySqlConnection bankDbConnection;
 
+        /// <summary>
+        /// The Atm class constructor.
+        /// </summary>
+        /// <param name="inBankName"> The name of the bank we are creating. </param>
+        /// <param name="inLocation"> The location of the bank we are creating. </param>
         public Atm(string inBankName, string inLocation)
         {
             this.bankName = inBankName;
@@ -33,6 +52,9 @@ namespace mattsATM
             this.bankDbConnection = null;
         }
 
+        /// <summary>
+        /// Atm method to open a connection to our designated MySQL database.
+        /// </summary>
         public void DbOpenConnection()
         {
             string infoString = ConnectionString;
@@ -54,6 +76,9 @@ namespace mattsATM
             }
         }
 
+        /// <summary>
+        /// Atm method to close the connection to our designated MySQL database.
+        /// </summary>
         public void DbCloseConnection()
         {
             MySqlConnection toBeClosed = bankDbConnection;
@@ -73,6 +98,12 @@ namespace mattsATM
             }
         }
 
+        /// <summary>
+        /// Atm method to present the main menu and give the user choices on how to proceed.
+        /// </summary>
+        /// <returns>
+        /// usrChoice: an integer 1-3 representing the next step in the flow of the program.
+        /// </returns>
         public int PresentMenu()
         {
             Console.WriteLine(" --------------------------");
@@ -97,6 +128,12 @@ namespace mattsATM
             return usrChoice;
         }
 
+        /// <summary>
+        /// Atm method to present logged-in users with a menu in which they can access their account
+        /// </summary>
+        /// <returns>
+        /// usrChoice: an integer 1-5 representing the next step in the flow of the program.
+        /// </returns>
         public int PresentLoggedInMenu()
         {
             Console.WriteLine("\nPlease select an option from the menu below:\n");
@@ -115,6 +152,9 @@ namespace mattsATM
             return usrChoice;
         }
 
+        /// <summary>
+        /// Atm method to print the instance variables of the current ATM.
+        /// </summary>
         public void PrintInfo()
         {
             Console.WriteLine("ATM INFO -------");
@@ -123,10 +163,10 @@ namespace mattsATM
         }
 
         /// <summary>
-        /// creates an 11 digit random identifier
+        /// Atm method to create an 11 digit random identifier for a user.
         /// </summary>
         /// <returns>
-        /// randomPathName: an 11 digit randomized string of letters and numbers
+        /// randomPathName: an 11 digit randomized string of letters and numbers.
         /// </returns>
         public string IdGen()
         {
@@ -137,6 +177,12 @@ namespace mattsATM
             return randomPathName;
         }
 
+        /// <summary>
+        /// Atm method to read in instance variables from the user and create a new User in the system.
+        /// </summary>
+        /// <returns>
+        /// newUser: the User object created by collecting the necessary data and calling constructor.
+        /// </returns>
         public User NewUserSignUp()
         {
             Console.WriteLine("\nPlease enter your First, Middle (if applicable), and Last name below.");
@@ -195,6 +241,10 @@ namespace mattsATM
             return newUser;  // return the new User with validated info
         }
 
+        /// <summary>
+        /// Atm method to store our new user in the MySQL database.
+        /// </summary>
+        /// <param name="newUser"> The User created in NewUserSignUp() </param>
         public void RegisterNewUser(User newUser)
         {
             string sqlString = $"INSERT INTO USERS VALUES (\"{newUser.Name}\", \"{newUser.ID}\"" +
@@ -221,6 +271,12 @@ namespace mattsATM
             }
         }
 
+        /// <summary>
+        /// Atm method to log-in an already registered user (user exists in our database).
+        /// </summary>
+        /// <returns>
+        /// isLoggedIn: a boolean describing whether the log-in attempt was successful or not.
+        /// </returns>
         public bool UserLogIn()
         {
             bool isLoggedIn = false;
@@ -319,6 +375,11 @@ namespace mattsATM
             }
         }
 
+        /// <summary>
+        /// Atm method to validate any input that the user enters through the keyboard.
+        /// </summary>
+        /// <param name="input"> The string input from the user </param>
+        /// <returns></returns>
         public string ValidateUserInput(string input)
         {
             string validatedInput = "";
@@ -326,7 +387,12 @@ namespace mattsATM
             return validatedInput;
         }
 
-        // ConnectionString property
+        /// <summary>
+        /// ConnectionString Property
+        /// </summary>
+        /// <value>
+        /// A string containing the Database, Uid, and Pwd for the designated MySQL db.
+        /// </value>
         public string ConnectionString
         {
             get
@@ -343,21 +409,35 @@ namespace mattsATM
     }
 
     /// <summary>
-    /// The User class: represents and stores info for a person using this ATM program
+    /// The User class: represents and stores info for a person using this ATM program.
     /// </summary>
     /// <remarks>
     /// Users have a name, ID, and pin. All are necessary to have if wishing to use this ATM.
-    /// If a person does not have an ID or pin, he or she must register with the system.
+    /// If a person does not have an ID or pin, he or she must sign-up and register.
     /// </remarks>
     class User
     {
-
+        /// <summary>
+        /// The given name of the user.
+        /// </summary>
         private string name;
 
+        /// <summary>
+        /// The 11 digit ID generated by the system upon sign-up.
+        /// </summary>
         private string id;
 
+        /// <summary>
+        /// A 4 digit pin assigned by the user themselves.
+        /// </summary>
         private int pin;
 
+        /// <summary>
+        /// The User class constructor.
+        /// </summary>
+        /// <param name="inName"> Name of the User we are creating. </param>
+        /// <param name="inID"> ID of the user we are creating. </param>
+        /// <param name="inPin"> Pin of the user we are creating. </param>
         public User(string inName, string inID, int inPin)
         {
             this.name = inName;
@@ -365,7 +445,12 @@ namespace mattsATM
             this.pin = inPin;
         }
 
-        // Name property of type string
+        /// <summary>
+        /// Name Property.
+        /// </summary>
+        /// <value>
+        /// A string representing the user's first, (middle), last name.
+        /// </value>
         public string Name
         {
             get
@@ -379,7 +464,12 @@ namespace mattsATM
             }
         }
 
-        // ID property
+        /// <summary>
+        /// ID Property.
+        /// </summary>
+        /// <value>
+        /// 11 digit sequence of randomized letters and numbers.
+        /// </value>
         public string ID
         {
             get
@@ -394,7 +484,12 @@ namespace mattsATM
           
          }
 
-        // Pin property of type int
+        /// <summary>
+        /// Pin Property.
+        /// </summary>
+        /// <value>
+        /// A 4 digit integer used by the user for login.
+        /// </value>
         public int Pin
         {
             get
@@ -409,11 +504,15 @@ namespace mattsATM
     }
 
     /// <summary>
-    /// The main class: contains the main method where our ATM instance is created
-    /// and menus are displayed for the user to navigate our services
+    /// The main class: contains the main method where our ATM instance is created.
+    /// and menus are displayed for the user to navigate our services.
     /// </summary>
     class MainClass
     {
+        /// <summary>
+        /// Entry point to the program.
+        /// </summary>
+        /// <param name="args"> List of command line arguments. </param>
         public static void Main(string[] args)
         {
             Atm newAtm = new Atm("CitiBank", "New York");
