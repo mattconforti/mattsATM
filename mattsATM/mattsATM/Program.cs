@@ -6,6 +6,11 @@ using MySql.Data.MySqlClient;
 namespace mattsATM
 {
     /// <summary>
+    /// A enumeration of data types to be used in validation of usr input
+    /// </summary>
+    public enum DesiredDataTypes { stringType, intType, floatType };
+
+    /// <summary>
     /// The Atm class: a simulation of an automated teller machine.
     /// </summary>
     /// <remarks>
@@ -122,12 +127,8 @@ namespace mattsATM
 
             Console.WriteLine("\nEnter your choice below. ");
             Console.Write("> ");
-            int usrChoice;
-            if (! (Int32.TryParse(Console.ReadLine(), out usrChoice)))
-            {
-                Console.WriteLine("\nEnter only a number (1-3).");
-                Environment.Exit(0);
-            }
+            string usrInput = Console.ReadLine();
+            int usrChoice = ValidateUserInput(usrInput, DesiredDataTypes.intType);  // validate input
             return usrChoice;
         }
 
@@ -218,7 +219,7 @@ namespace mattsATM
                 }
             }
             userFullName = usrInfoIn;  // name is valid
-            
+
             string userID = IdGen();
             Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
 
@@ -268,7 +269,7 @@ namespace mattsATM
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine($"Exception:\n{e.ToString()}");
             }
@@ -382,12 +383,35 @@ namespace mattsATM
         /// Atm method to validate any input that the user enters through the keyboard.
         /// </summary>
         /// <param name="input"> The string input from the user </param>
-        /// <returns></returns>
-        public string ValidateUserInput(string input)
+        /// <param name="desiredDataType"> The desired data type of the input after validation </param>
+        /// <returns> validatedInput - of dynamic type </returns>
+        public dynamic ValidateUserInput(string input, DesiredDataTypes desiredDataType)
         {
-            string validatedInput = "";
+            switch (desiredDataType)
+            {
+                case DesiredDataTypes.intType:
+                    int validatedInt;
+                    if (!int.TryParse(input, out validatedInt))
+                    {
+                        Console.WriteLine("** Enter only a whole number **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+                    return validatedInt;
 
-            return validatedInput;
+                case DesiredDataTypes.stringType:
+                    string validatedString = "";
+
+                    return validatedString;
+
+                case DesiredDataTypes.floatType:
+                    float validatedFloat = 0.0f;
+
+                    return validatedFloat;
+
+                default:
+                    return "Error";
+            }
         }
     }
 
