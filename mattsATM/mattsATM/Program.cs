@@ -22,7 +22,7 @@ namespace mattsATM
         /// <summary>
         /// A boolean value to determine whether to print debug statements or not.
         /// </summary>
-        public bool debug = true;
+        public bool debug = false;
 
         /// <summary>
         /// The name of the bank. Ex. Chase.
@@ -147,12 +147,8 @@ namespace mattsATM
             Console.WriteLine("4. Display Transaction History");
             Console.WriteLine("5. Exit\n");
             Console.Write("> ");
-            int usrChoice;
-            if (!(Int32.TryParse(Console.ReadLine(), out usrChoice)))
-            {
-                Console.WriteLine("\nEnter only a number (1-5).");
-                Environment.Exit(0);
-            }
+            string usrInput = Console.ReadLine();
+            int usrChoice = ValidateUserInput(usrInput, DesiredDataTypes.intType);
             return usrChoice;
         }
 
@@ -192,33 +188,7 @@ namespace mattsATM
             Console.WriteLine("\nPlease enter your First, Middle (if applicable), and Last name below.");
             Console.Write("> ");
             string usrInfoIn = Console.ReadLine();
-            string userFullName;
-            string[] nameArr = usrInfoIn.Split(' ');
-            int arrayLen = nameArr.Length;
-
-            if (arrayLen < 2 || arrayLen > 3)  // has to be first, middle (if applicable), last
-            {
-                Console.WriteLine("\nName not accepted.\nApplication quitting for security reasons.");
-                Environment.Exit(0);
-            }
-
-            foreach (var name in nameArr)
-            {
-                foreach (var character in name)
-                {
-                    if (debug)
-                    {
-                        Console.WriteLine(character);
-                    }
-
-                    if (!(Char.IsLetter(character))) // if any of the characters is not a letter
-                    {
-                        Console.WriteLine("\nName not accepted.\nApplication quitting for security reasons.");
-                        Environment.Exit(0);
-                    }
-                }
-            }
-            userFullName = usrInfoIn;  // name is valid
+            string userFullName = ValidateUserInput(usrInfoIn, DesiredDataTypes.stringType);  // validate name
 
             string userID = IdGen();
             Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
@@ -228,14 +198,8 @@ namespace mattsATM
             Console.WriteLine("\n** REMEMBER YOUR ID AND PIN FOR FUTURE USE **\n");
             Console.Write("> ");
             string userInput = Console.ReadLine();
-            int userPin;
-            if (userInput.Length < 4)
-            {
-                Console.WriteLine("\nPin not accepted.\nApplication quitting for security reasons.");
-                Environment.Exit(0);
-            }
-
-            if (!(Int32.TryParse(userInput, out userPin))) // if can't be converted to int
+            int userPin = ValidateUserInput(userInput, DesiredDataTypes.intType);  // validate the pin
+            if (userPin.ToString().Length < 4)
             {
                 Console.WriteLine("\nPin not accepted.\nApplication quitting for security reasons.");
                 Environment.Exit(0);
@@ -389,22 +353,43 @@ namespace mattsATM
         {
             switch (desiredDataType)
             {
-                case DesiredDataTypes.intType:
+                case DesiredDataTypes.intType:  // case: int
                     int validatedInt;
                     if (!int.TryParse(input, out validatedInt))
                     {
-                        Console.WriteLine("** Enter only a whole number **");
+                        Console.WriteLine("\n** Enter only an integer **");
                         Console.WriteLine("Application quitting. Please try again!");
                         Environment.Exit(0);
                     }
                     return validatedInt;
 
-                case DesiredDataTypes.stringType:
-                    string validatedString = "";
+                case DesiredDataTypes.stringType:  // case: string
+                    string validatedString;
 
+                    string strippedInput = input.Trim();
+                    string[] words = strippedInput.Split(' ');
+
+                    foreach (var word in words)
+                    {
+                        foreach (var character in word)
+                        {
+                            if (debug)
+                            {
+                                Console.WriteLine(character);
+                            }
+
+                            if (!(Char.IsLetter(character))) // if any of the characters is not a letter
+                            {
+                                Console.WriteLine("\nName not accepted.\nApplication quitting for security reasons.");
+                                Environment.Exit(0);
+                            }
+                        }
+                    }
+
+                    validatedString = "";
                     return validatedString;
 
-                case DesiredDataTypes.floatType:
+                case DesiredDataTypes.floatType:  // case: float
                     float validatedFloat = 0.0f;
 
                     return validatedFloat;
