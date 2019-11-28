@@ -246,11 +246,10 @@ namespace mattsATM
             Console.WriteLine("\nEnter your ID and Pin below to log-in");
             Console.Write("ID > ");
             string idIn = Console.ReadLine();
-            //TODO validate this input (11 characters, 1 word, etc.)
+            string validIdIn = ValidateUserInput(idIn, UserInputTypes.iD);
             Console.Write("Pin > ");
             string pinIn = Console.ReadLine();
-            int iPinIn = Convert.ToInt32(pinIn);
-            //TODO validate this input
+            int iPinIn = ValidateUserInput(pinIn, UserInputTypes.pin);  // validate the pin entered
 
             // check if the user's input matches whats in the db
             string idQueryString = "SELECT ID FROM USERS;";
@@ -281,14 +280,14 @@ namespace mattsATM
                 }
             }
 
-            if (dbQueryResults.Contains(idIn))  // if the database contains the ID entered
+            if (dbQueryResults.Contains(validIdIn))  // if the database contains the ID entered
             {
                 if (debug)
                 {
                     Console.WriteLine("\nID match!");
                 }
 
-                string checkPinQuery = $"SELECT PIN FROM USERS WHERE ID=\"{idIn}\"";
+                string checkPinQuery = $"SELECT PIN FROM USERS WHERE ID=\"{validIdIn}\"";
 
                 try
                 {
@@ -342,7 +341,7 @@ namespace mattsATM
         /// Atm method to validate any input that the user enters through the keyboard.
         /// </summary>
         /// <param name="input"> The string input from the user </param>
-        /// <param name="userInputType"> The desired data type of the input after validation </param>
+        /// <param name="userInputType"> The name of the data input by the user </param>
         /// <returns> validatedInput - of dynamic type </returns>
         public dynamic ValidateUserInput(string input, UserInputTypes userInputType)
         {
@@ -350,7 +349,8 @@ namespace mattsATM
             {
                 case UserInputTypes.choice13:  // case: choice 1-3
                     int validatedInt13;
-                    if (!int.TryParse(input, out validatedInt13))
+                    string strippedChoice13 = input.Trim();
+                    if (!int.TryParse(strippedChoice13, out validatedInt13))
                     {
                         Console.WriteLine("\n** Enter only an integer (1-3) **");
                         Console.WriteLine("Application quitting. Please try again!");
@@ -360,7 +360,8 @@ namespace mattsATM
 
                 case UserInputTypes.choice15:  // case: choice 1-5
                     int validatedInt15;
-                    if (!int.TryParse(input, out validatedInt15))
+                    string strippedChoice15 = input.Trim();
+                    if (!int.TryParse(strippedChoice15, out validatedInt15))
                     {
                         Console.WriteLine("\n** Enter only an integer (1-5) **");
                         Console.WriteLine("Application quitting. Please try again!");
@@ -375,7 +376,7 @@ namespace mattsATM
                     string[] words = strippedInput.Split(' ');
 
                     if (words.Length < 2 || words.Length > 3)  // name needs to be 2 or 3 words long
-                    {  
+                    {
                         Console.WriteLine("\n** Enter your 'first (middle) last' name **");
                         Console.WriteLine("Application quitting. Please try again!");
                         Environment.Exit(0);
@@ -402,7 +403,8 @@ namespace mattsATM
 
                 case UserInputTypes.pin:  // case: pin
                     int validatedPin;
-                    if (!int.TryParse(input, out validatedPin))
+                    string strippedPin = input.Trim();
+                    if (!int.TryParse(strippedPin, out validatedPin))
                     {
                         Console.WriteLine("\n** Enter only a pin consisting of 4 numbers **");
                         Console.WriteLine("Application quitting. Please try again!");
@@ -415,6 +417,28 @@ namespace mattsATM
                         Environment.Exit(0);
                     }
                     return validatedPin;
+
+                case UserInputTypes.iD:
+                    string validatedID;
+                    string strippedID = input.Trim();
+                    string[] wordArr = strippedID.Split(' ');
+
+                    if (wordArr.Length != 1)
+                    {
+                        Console.WriteLine("\n** Your ID should be an 11 character sequence with no spaces. **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+
+                    if (strippedID.Length != 11)
+                    {
+                        Console.WriteLine("\n** Your ID should be an 11 character sequence with no spaces. **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+
+                    validatedID = strippedID;  // we now know that the stripped input is a valid ID
+                    return validatedID;
 
                 default:
                     return "Error";
