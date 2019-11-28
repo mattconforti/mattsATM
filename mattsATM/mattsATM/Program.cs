@@ -246,10 +246,10 @@ namespace mattsATM
             Console.WriteLine("\nEnter your ID and Pin below to log-in");
             Console.Write("ID > ");
             string idIn = Console.ReadLine();
-            string validIdIn = ValidateUserInput(idIn, UserInputTypes.iD);
+            string validIdIn = ValidateUserInput(idIn, UserInputTypes.iD);  // validate the id entered
             Console.Write("Pin > ");
             string pinIn = Console.ReadLine();
-            int iPinIn = ValidateUserInput(pinIn, UserInputTypes.pin);  // validate the pin entered
+            int iPinIn = ValidateUserInput(pinIn, UserInputTypes.pin);  // validate the pin
 
             // check if the user's input matches whats in the db
             string idQueryString = "SELECT ID FROM USERS;";
@@ -418,7 +418,7 @@ namespace mattsATM
                     }
                     return validatedPin;
 
-                case UserInputTypes.iD:
+                case UserInputTypes.iD:  // case: id
                     string validatedID;
                     string strippedID = input.Trim();
                     string[] wordArr = strippedID.Split(' ');
