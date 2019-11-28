@@ -8,7 +8,7 @@ namespace mattsATM
     /// <summary>
     /// A enumeration of data types to be used in validation of usr input
     /// </summary>
-    public enum DesiredDataTypes { stringType, intType, floatType };
+    public enum UserInputTypes { choice13, choice15, fullName, pin, iD, dollarAmountWithdraw, dollarAmountDeposit };
 
     /// <summary>
     /// The Atm class: a simulation of an automated teller machine.
@@ -128,7 +128,7 @@ namespace mattsATM
             Console.WriteLine("\nEnter your choice below. ");
             Console.Write("> ");
             string usrInput = Console.ReadLine();
-            int usrChoice = ValidateUserInput(usrInput, DesiredDataTypes.intType);  // validate input
+            int usrChoice = ValidateUserInput(usrInput, UserInputTypes.choice13);  // validate input
             return usrChoice;
         }
 
@@ -148,7 +148,7 @@ namespace mattsATM
             Console.WriteLine("5. Exit\n");
             Console.Write("> ");
             string usrInput = Console.ReadLine();
-            int usrChoice = ValidateUserInput(usrInput, DesiredDataTypes.intType);
+            int usrChoice = ValidateUserInput(usrInput, UserInputTypes.choice15);
             return usrChoice;
         }
 
@@ -188,7 +188,7 @@ namespace mattsATM
             Console.WriteLine("\nPlease enter your First, Middle (if applicable), and Last name below.");
             Console.Write("> ");
             string usrInfoIn = Console.ReadLine();
-            string userFullName = ValidateUserInput(usrInfoIn, DesiredDataTypes.stringType);  // validate name
+            string userFullName = ValidateUserInput(usrInfoIn, UserInputTypes.fullName);  // validate name
 
             string userID = IdGen();
             Console.WriteLine($"\nYour auto-generated UserID is {userID}\n");
@@ -198,12 +198,7 @@ namespace mattsATM
             Console.WriteLine("\n** REMEMBER YOUR ID AND PIN FOR FUTURE USE **\n");
             Console.Write("> ");
             string userInput = Console.ReadLine();
-            int userPin = ValidateUserInput(userInput, DesiredDataTypes.intType);  // validate the pin
-            if (userPin.ToString().Length < 4)
-            {
-                Console.WriteLine("\nPin not accepted.\nApplication quitting for security reasons.");
-                Environment.Exit(0);
-            }
+            int userPin = ValidateUserInput(userInput, UserInputTypes.pin);  // validate the pin
 
             User newUser = new User(userFullName, userID, userPin);
             return newUser;  // return the new User with validated info
@@ -347,27 +342,44 @@ namespace mattsATM
         /// Atm method to validate any input that the user enters through the keyboard.
         /// </summary>
         /// <param name="input"> The string input from the user </param>
-        /// <param name="desiredDataType"> The desired data type of the input after validation </param>
+        /// <param name="userInputType"> The desired data type of the input after validation </param>
         /// <returns> validatedInput - of dynamic type </returns>
-        public dynamic ValidateUserInput(string input, DesiredDataTypes desiredDataType)
+        public dynamic ValidateUserInput(string input, UserInputTypes userInputType)
         {
-            switch (desiredDataType)
+            switch (userInputType)
             {
-                case DesiredDataTypes.intType:  // case: int
-                    int validatedInt;
-                    if (!int.TryParse(input, out validatedInt))
+                case UserInputTypes.choice13:  // case: choice 1-3
+                    int validatedInt13;
+                    if (!int.TryParse(input, out validatedInt13))
                     {
-                        Console.WriteLine("\n** Enter only an integer **");
+                        Console.WriteLine("\n** Enter only an integer (1-3) **");
                         Console.WriteLine("Application quitting. Please try again!");
                         Environment.Exit(0);
                     }
-                    return validatedInt;
+                    return validatedInt13;
 
-                case DesiredDataTypes.stringType:  // case: string
+                case UserInputTypes.choice15:  // case: choice 1-5
+                    int validatedInt15;
+                    if (!int.TryParse(input, out validatedInt15))
+                    {
+                        Console.WriteLine("\n** Enter only an integer (1-5) **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+                    return validatedInt15;
+
+                case UserInputTypes.fullName:  // case: full name
                     string validatedString;
 
                     string strippedInput = input.Trim();
                     string[] words = strippedInput.Split(' ');
+
+                    if (words.Length < 2 || words.Length > 3)  // name needs to be 2 or 3 words long
+                    {  
+                        Console.WriteLine("\n** Enter your 'first (middle) last' name **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
 
                     foreach (var word in words)
                     {
@@ -385,14 +397,24 @@ namespace mattsATM
                             }
                         }
                     }
-
-                    validatedString = "";
+                    validatedString = strippedInput;  // we now know that the stripped input is a valid fullName
                     return validatedString;
 
-                case DesiredDataTypes.floatType:  // case: float
-                    float validatedFloat = 0.0f;
-
-                    return validatedFloat;
+                case UserInputTypes.pin:  // case: pin
+                    int validatedPin;
+                    if (!int.TryParse(input, out validatedPin))
+                    {
+                        Console.WriteLine("\n** Enter only a pin consisting of 4 numbers **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+                    if (validatedPin.ToString().Length != 4)
+                    {
+                        Console.WriteLine("\n** The pin must be 4 digits **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+                    return validatedPin;
 
                 default:
                     return "Error";
