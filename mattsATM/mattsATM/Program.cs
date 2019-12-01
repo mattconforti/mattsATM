@@ -444,6 +444,24 @@ namespace mattsATM
                     return "Error";
             }
         }
+
+        public void displayBalance(User user)
+        {
+            string sqlString = $"SELECT balance FROM BANKRECORDS WHERE userID={user.ID}";
+            float currentBalance;
+
+            try
+            {
+                MySqlCommand command = new MySqlCommand(sqlString, bankDbConnection);
+                object queryResult = command.ExecuteScalar();
+                currentBalance = (float)queryResult;
+                Console.WriteLine($"\nCurrent Balance: ${currentBalance}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error:\n{e.ToString()}");
+            }
+        }
     }
 
     /// <summary>
@@ -518,6 +536,7 @@ namespace mattsATM
             {
                 case 1:
                     bool userLoggedIn = newAtm.UserLogIn();
+                    //TODO: get the logged in user object here for later use
                     if (userLoggedIn)
                     {
                         int usrChoice = newAtm.PresentLoggedInMenu();
@@ -531,6 +550,7 @@ namespace mattsATM
                                 break;
 
                             case 3:
+                                //newAtm.displayBalance(loggedInUser);
                                 break;
 
                             case 4:
