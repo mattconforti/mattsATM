@@ -40,6 +40,11 @@ namespace mattsATM
         private MySqlConnection bankDbConnection;
 
         /// <summary>
+        /// A boolean value to tell whether the Atm User is logged in or not.
+        /// </summary>
+        public bool isLoggedIn;
+
+        /// <summary>
         /// The Atm class constructor.
         /// </summary>
         /// <param name="inBankName"> The name of the bank we are creating. </param>
@@ -50,6 +55,7 @@ namespace mattsATM
             this.location = inLocation;
             this.ConnectionString = "Database=mattsAtmDb; Uid=atmQuery; Pwd=atmPwd;";
             this.bankDbConnection = null;
+            this.isLoggedIn = false;
         }
 
         /// <summary>
@@ -238,11 +244,10 @@ namespace mattsATM
         /// Atm method to log-in an already registered user (user exists in our database).
         /// </summary>
         /// <returns>
-        /// isLoggedIn: a boolean describing whether the log-in attempt was successful or not.
+        /// dynamic - either the logged in User object, or null (meaning the User is not logged in)
         /// </returns>
-        public bool UserLogIn()
-        {
-            bool isLoggedIn = false;
+        public dynamic UserLogIn()
+        { 
             Console.WriteLine("\nEnter your ID and Pin below to log-in");
             Console.Write("ID > ");
             string idIn = Console.ReadLine();
@@ -269,7 +274,7 @@ namespace mattsATM
             catch (Exception e)
             {
                 Console.WriteLine($"Exception:\n{e.ToString()}");
-                return isLoggedIn;
+                return null;
             }
 
             if (debug)
@@ -307,20 +312,29 @@ namespace mattsATM
                             Console.WriteLine("\nPin Match!");
                         }
                         Console.WriteLine("\nSuccessful Log-In. Welcome!");
+
+                        string getNameQuery = $"SELECT NAME FROM USERS WHERE ID=\"{validIdIn}\"";
+                        MySqlCommand nameCommand = new MySqlCommand(getNameQuery, bankDbConnection);
+                        object nameQueryResult = nameCommand.ExecuteScalar();
+
+                        string userFullName = nameQueryResult.ToString();
+
+                        User loggedInUser = new User(userFullName, validIdIn, dbPin);  // create our logged in User instance
                         isLoggedIn = true;
-                        return isLoggedIn;
+                        return loggedInUser;
+                        
                     }
                     else
                     {
                         Console.WriteLine("\n** Incorrect Pin **\n");
                         Console.WriteLine("Application quitting for security reasons.");
-                        return isLoggedIn;
+                        return null;
                     }
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"Error:\n{e.ToString()}");
-                    return isLoggedIn;
+                    return null;
                 }
 
             }
@@ -333,7 +347,7 @@ namespace mattsATM
                 Console.WriteLine("\n**ID not found in our system.**\n");
                 Console.WriteLine("If you are a registered user, please try again.");
                 Console.WriteLine("\nOtherwise, please select choice 2 (Register) when given the option.");
-                return isLoggedIn;
+                return null;
             }
         }
 
@@ -445,9 +459,9 @@ namespace mattsATM
             }
         }
 
-        public void displayBalance(User user)
+        public void DisplayBalance(User user)
         {
-            string sqlString = $"SELECT balance FROM BANKRECORDS WHERE userID={user.ID}";
+            string sqlString = $"SELECT balance FROM BANKRECORDS WHERE userID=\"{user.ID}\"";
             float currentBalance;
 
             try
@@ -535,9 +549,8 @@ namespace mattsATM
             switch (userSelection)
             {
                 case 1:
-                    bool userLoggedIn = newAtm.UserLogIn();
-                    //TODO: get the logged in user object here for later use
-                    if (userLoggedIn)
+                    User loggedInUser = newAtm.UserLogIn();  // if this object is null, it is not accessible and can be garbage collected
+                    if (newAtm.isLoggedIn)
                     {
                         int usrChoice = newAtm.PresentLoggedInMenu();
 
@@ -550,7 +563,7 @@ namespace mattsATM
                                 break;
 
                             case 3:
-                                //newAtm.displayBalance(loggedInUser);
+                                newAtm.DisplayBalance(loggedInUser);
                                 break;
 
                             case 4:
