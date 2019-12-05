@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Globalization;
 using MySql.Data.MySqlClient;
 
 namespace mattsATM
@@ -454,27 +455,75 @@ namespace mattsATM
                     validatedID = strippedID;  // we now know that the stripped input is a valid ID
                     return validatedID;
 
+                case UserInputTypes.dollarAmountDeposit:  // case: deposit
+                    float validatedAmt;
+                    string strippedAmt = input.Trim();
+
+                    if (!float.TryParse(strippedAmt, NumberStyles.Any, CultureInfo.InvariantCulture.NumberFormat, out validatedAmt)) // if the string cant be parsed to float
+                    {
+                        Console.WriteLine("\n** Enter only a dollar amount (ex. 12.51). **");
+                        Console.WriteLine("Application quitting. Please try again!");
+                        Environment.Exit(0);
+                    }
+                    return validatedAmt;
+
                 default:
                     return "Error";
             }
         }
 
-        public void DisplayBalance(User user)
+        /// <summary>
+        /// Atm method to display the balance of the current User stored in our database.
+        /// </summary>
+        /// <param name="user"> The user for which to display the balance </param>
+        /// <returns> currentBalance - a float representing the User's balance </returns>
+        public float GetBalance(User user)
         {
-            string sqlString = $"SELECT balance FROM BANKRECORDS WHERE userID=\"{user.ID}\"";
             float currentBalance;
+            string sqlString = $"SELECT currBalance FROM TRANSACTIONS WHERE userID=\"{user.ID}\" ORDER BY tDateTime desc LIMIT 1";
 
             try
             {
                 MySqlCommand command = new MySqlCommand(sqlString, bankDbConnection);
                 object queryResult = command.ExecuteScalar();
                 currentBalance = (float)queryResult;
-                Console.WriteLine($"\nCurrent Balance: ${currentBalance}");
+                return currentBalance;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error:\n{e.ToString()}");
+                return 0f;  // return 0 if exception
+            }
+        }
+
+        /// <summary>
+        /// Atm method for a User to deposit a specified amount into his/her account.
+        /// </summary>
+        /// <param name="user"> The User for which we are depositing money </param>
+        public void Deposit(User user)
+        {
+            float depositAmt;
+            float prevBalance = GetBalance(user);
+            Console.Write("\nPlease enter the amount to deposit: ");
+            string amtIn = Console.ReadLine();
+            depositAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmountDeposit);
+
+            string insertString = $"INSERT INTO TRANSACTIONS (userID, message, changeInBalance, currBalance) VALUES (\"{user.ID}\", \"Deposit\", {depositAmt}, {prevBalance + depositAmt});";
+
+            try
+            {
+                MySqlCommand command = new MySqlCommand(insertString, bankDbConnection);
+                command.ExecuteNonQuery();
+                Console.WriteLine("\nDeposit Successful!");
+                // output the new balance (oldBalance + depositAmt)
+
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error:\n{e.ToString()}");
             }
+
+
         }
     }
 
@@ -560,10 +609,12 @@ namespace mattsATM
                                 break;
 
                             case 2:
+                                newAtm.Deposit(loggedInUser);
                                 break;
 
                             case 3:
-                                newAtm.DisplayBalance(loggedInUser);
+                                float currentBalance = newAtm.GetBalance(loggedInUser);
+                                Console.WriteLine($"\nCurrent Balance: ${currentBalance.ToString()}");
                                 break;
 
                             case 4:
