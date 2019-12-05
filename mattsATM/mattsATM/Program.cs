@@ -9,7 +9,7 @@ namespace mattsATM
     /// <summary>
     /// A enumeration of data types to be used in validation of usr input
     /// </summary>
-    public enum UserInputTypes { choice13, choice15, fullName, pin, iD, dollarAmountWithdraw, dollarAmountDeposit };
+    public enum UserInputTypes { choice13, choice15, fullName, pin, iD, dollarAmount };
 
     /// <summary>
     /// The Atm class: a simulation of an automated teller machine.
@@ -455,7 +455,7 @@ namespace mattsATM
                     validatedID = strippedID;  // we now know that the stripped input is a valid ID
                     return validatedID;
 
-                case UserInputTypes.dollarAmountDeposit:  // case: deposit
+                case UserInputTypes.dollarAmount:  // case: dollarAmount - for deposit and withdrawal
                     float validatedAmt;
                     string strippedAmt = input.Trim();
 
@@ -506,7 +506,7 @@ namespace mattsATM
             float prevBalance = GetBalance(user);
             Console.Write("\nPlease enter the amount to deposit: $");
             string amtIn = Console.ReadLine();
-            depositAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmountDeposit);
+            depositAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmount);
 
             string insertString = $"INSERT INTO TRANSACTIONS (userID, message, changeInBalance, currBalance) VALUES (\"{user.ID}\", \"Deposit\", {depositAmt}, {prevBalance + depositAmt});";
 
@@ -521,6 +521,43 @@ namespace mattsATM
             catch (Exception e)
             {
                 Console.WriteLine($"Error:\n{e.ToString()}");
+            }
+        }
+
+        /// <summary>
+        /// Atm method for a User to withdraw a specified amount from his/her account.
+        /// </summary>
+        /// <param name="user"> The User for which we are withdrawing money </param>
+        public void Withdraw(User user)
+        {
+            float withdrawalAmt;
+            float prevBalance = GetBalance(user);
+            Console.Write("\nPlease enter the amount to withdraw: $");
+            string amtIn = Console.ReadLine();
+            withdrawalAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmount);
+
+            if (withdrawalAmt <= prevBalance)  // if the user has enough in the account
+            {
+                string insertString = $"INSERT INTO TRANSACTIONS (userID, message, changeInBalance, currBalance) VALUES (\"{user.ID}\", \"Withdrawal\", {withdrawalAmt}, {prevBalance - withdrawalAmt});";
+
+                try
+                {
+                    MySqlCommand command = new MySqlCommand(insertString, bankDbConnection);
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("\nWithdrawal Successful!");
+                    Console.WriteLine($"Your new balance is: ${prevBalance - withdrawalAmt}");
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error:\n{e.ToString()}");
+                }
+            }
+            else  // attempting to withdraw more money than they have
+            {
+                Console.WriteLine("\nInsufficient Funds.");
+                Console.WriteLine("\nApplication quitting");
+                Environment.Exit(0);
             }
         }
     }
@@ -604,6 +641,7 @@ namespace mattsATM
                         switch (usrChoice)
                         {
                             case 1:
+                                newAtm.Withdraw(loggedInUser);
                                 break;
 
                             case 2:
