@@ -504,7 +504,7 @@ namespace mattsATM
         {
             float depositAmt;
             float prevBalance = GetBalance(user);
-            Console.Write("\nPlease enter the amount to deposit: ");
+            Console.Write("\nPlease enter the amount to deposit: $");
             string amtIn = Console.ReadLine();
             depositAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmountDeposit);
 
@@ -515,15 +515,13 @@ namespace mattsATM
                 MySqlCommand command = new MySqlCommand(insertString, bankDbConnection);
                 command.ExecuteNonQuery();
                 Console.WriteLine("\nDeposit Successful!");
-                // output the new balance (oldBalance + depositAmt)
+                Console.WriteLine($"Your new balance is: ${prevBalance + depositAmt}");
 
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error:\n{e.ToString()}");
             }
-
-
         }
     }
 
@@ -621,6 +619,8 @@ namespace mattsATM
                                 break;
 
                             case 5:
+                                Console.WriteLine("\nApplication quitting.");
+                                Environment.Exit(0);
                                 break;
 
                             default:
@@ -641,6 +641,7 @@ namespace mattsATM
 
                 case 3:
                     newAtm.DbCloseConnection();
+                    Console.WriteLine("\nApplication quitting.");
                     Environment.Exit(0);
                     break;
 
