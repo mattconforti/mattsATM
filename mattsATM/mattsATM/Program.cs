@@ -72,7 +72,7 @@ namespace mattsATM
         /// </summary>
         public void DbOpenConnection()
         {
-            string infoString = ConnectionString;
+            string infoString = this.ConnectionString;
             MySqlConnection dbConnection = new MySqlConnection(infoString);
 
             try
@@ -492,7 +492,7 @@ namespace mattsATM
             catch (Exception e)
             {
                 Console.WriteLine($"Error:\n{e.ToString()}");
-                return 0f;  // return 0 if exception
+                return 1f;  // return 1 if exception (error code)
             }
         }
 
@@ -558,6 +558,32 @@ namespace mattsATM
                 Console.WriteLine("\nInsufficient Funds.");
                 Console.WriteLine("\nApplication quitting");
                 Environment.Exit(0);
+            }
+        }
+
+        /// <summary>
+        /// Atm method to display all of a User's transactions stored in our db.
+        /// </summary>
+        /// <param name="user"> The User for which we are displaying transactions </param>
+        public void displayTransactions(User user)
+        {
+            string sqlString = $"SELECT * FROM TRANSACTIONS WHERE userID=\"{user.ID}\";";
+
+            try
+            {
+                MySqlCommand command = new MySqlCommand(sqlString, bankDbConnection);
+                MySqlDataReader dataReader = command.ExecuteReader();
+                Console.WriteLine("\nTransaction History:\n");
+
+                while (dataReader.Read())
+                {
+                    //TODO: output the dataReader's results
+                }
+                dataReader.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error:\n{e.ToString()}");
             }
         }
     }
@@ -654,6 +680,7 @@ namespace mattsATM
                                 break;
 
                             case 4:
+                                newAtm.displayTransactions(loggedInUser);
                                 break;
 
                             case 5:
