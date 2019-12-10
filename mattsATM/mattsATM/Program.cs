@@ -508,7 +508,7 @@ namespace mattsATM
             string amtIn = Console.ReadLine();
             depositAmt = ValidateUserInput(amtIn, UserInputTypes.dollarAmount);
 
-            string insertString = $"INSERT INTO TRANSACTIONS (userID, message, changeInBalance, currBalance) VALUES (\"{user.ID}\", \"Deposit\", {depositAmt}, {prevBalance + depositAmt});";
+            string insertString = $"INSERT INTO TRANSACTIONS (userID, message, changeInBalance, currBalance) VALUES (\"{user.ID}\", \"Deposit   \", {depositAmt}, {prevBalance + depositAmt});";
 
             try
             {
@@ -567,17 +567,22 @@ namespace mattsATM
         /// <param name="user"> The User for which we are displaying transactions </param>
         public void displayTransactions(User user)
         {
-            string sqlString = $"SELECT * FROM TRANSACTIONS WHERE userID=\"{user.ID}\";";
+            string sqlString = $"SELECT * FROM TRANSACTIONS WHERE userID=\"{user.ID}\";"; //TODO: get only date, users name, ID, message, changeInBalance and currBalance
 
             try
             {
                 MySqlCommand command = new MySqlCommand(sqlString, bankDbConnection);
                 MySqlDataReader dataReader = command.ExecuteReader();
-                Console.WriteLine("\nTransaction History:\n");
+                Console.WriteLine("\nTransaction History:");
+                Console.WriteLine("+---------------------------------------------------------------------------------------+");
+                Console.WriteLine("| tID | userID      | tDateTime            | message    | changeInBalance | currBalance |");
+                Console.WriteLine("+---------------------------------------------------------------------------------------+");
 
                 while (dataReader.Read())
                 {
-                    //TODO: output the dataReader's results
+                    Console.WriteLine($"|   {dataReader[0]} | {dataReader[1]} | {dataReader[2]} |" +
+                        $" {dataReader[3]} | {dataReader[4]}               | {dataReader[5]}           |");
+                    Console.WriteLine("+---------------------------------------------------------------------------------------+");
                 }
                 dataReader.Close();
             }
