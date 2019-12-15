@@ -567,22 +567,21 @@ namespace mattsATM
         /// <param name="user"> The User for which we are displaying transactions </param>
         public void displayTransactions(User user)
         {
-            string sqlString = $"SELECT * FROM TRANSACTIONS WHERE userID=\"{user.ID}\";"; //TODO: get only date, users name, ID, message, changeInBalance and currBalance
+            string sqlString = $"SELECT tDateTime, name, message, changeInBalance, currBalance from USERS RIGHT JOIN TRANSACTIONS" +
+                $" ON USERS.ID = TRANSACTIONS.userID WHERE TRANSACTIONS.userID = \"{user.ID}\";";
 
             try
             {
                 MySqlCommand command = new MySqlCommand(sqlString, bankDbConnection);
                 MySqlDataReader dataReader = command.ExecuteReader();
-                Console.WriteLine("\nTransaction History:");
-                Console.WriteLine("+---------------------------------------------------------------------------------------+");
-                Console.WriteLine("| tID | userID      | tDateTime            | message    | changeInBalance | currBalance |");
-                Console.WriteLine("+---------------------------------------------------------------------------------------+");
+                Console.WriteLine("\nTransaction History:\n");
+                Console.WriteLine("--------------------------------------------------------");
 
                 while (dataReader.Read())
                 {
-                    Console.WriteLine($"|   {dataReader[0]} | {dataReader[1]} | {dataReader[2]} |" +
-                        $" {dataReader[3]} | {dataReader[4]}               | {dataReader[5]}           |");
-                    Console.WriteLine("+---------------------------------------------------------------------------------------+");
+                    Console.WriteLine($"Date: {dataReader[0]}\n--------------------------------------------------------\n" +
+                    $"Name: {dataReader[1]}\nType: {dataReader[2]}\nBalance Change: ${dataReader[3]}\nCurrent Balance: ${dataReader[4]}\n");
+                    Console.WriteLine("--------------------------------------------------------");
                 }
                 dataReader.Close();
             }
